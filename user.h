@@ -22,5 +22,5 @@ typedef struct User {
 struct User* add(struct User*, char*);
 void printUser(struct User*);
 void printLog(struct User*);
-void generateDigest(struct Digest* digest, struct User* User);
+void generateDigest(struct Digest* digest, struct User* user);
 void verify(struct User*);

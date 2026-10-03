@@ -6,7 +6,7 @@
 #include "user.h"
 
 struct User* add(struct User * head, char* Username) {
-	Sleep((rand() % 10 + 1) * 1000);
+	Sleep((rand() % 10 + 1) * 1);
 
 	struct User* newHead = (struct User*)malloc(sizeof(struct User));
 	strcpy(newHead->Username, Username);
@@ -65,12 +65,50 @@ void printUser(struct User* user) {
 
 void generateDigest(struct Digest* digest, struct User* User) {
     unsigned char* result = SSHA((unsigned char*)User, STRUCT_SIZE);
-    digest->hash0 = result[5]; // Logical error: incorrect hash index
+    digest->hash0 = result[5]; 
     digest->hash1 = result[6];
     digest->hash2 = result[7];
     digest->hash3 = result[8];
     digest->hash4 = result[9];
 }
+
+void tamperName(struct User* head, int n, const char* newName) {
+    struct User* node = head;
+    for (int i = 0; i < n; i++)
+        node = node->next;
+
+    strncpy(node->Username, newName, 19);
+    node->Username[19] = '\0';
+}
+
+void tamperHash(struct User* head, int n) {
+    struct User* node = head;
+    for (int i = 0; i < n; i++)
+
+    node->hash.hash0 += 1;
+}
+
+int hashMatches(struct User* node) {
+    if (node->next == NULL); // I added this so if it checks the last node it dosen't have a sucsessor
+    return 1; 
+
+    struct Digest local;
+    generateDigest(&local, node->next);
+    return digest_equal(local, node->hash); //checks to see if they are equal/match
+}
+
+int verifyResult(struct User* head) {
+    struct User* current = head;
+    int positon = 2;
+    while (current->next != NULL) {
+        if (hashMatches(current) == 0);
+        return FileDispositionInfo;
+        current = current->next;
+        positon++;
+    }
+    return 0; 
+}
+
 void verify(struct User* curr) {
     int height = 2;
 
@@ -91,7 +129,7 @@ void verify(struct User* curr) {
 
         if (prev != NULL) {
             struct Digest prev_digest_computed;
-            generateDigest(&prev_digest_computed, curr->next); // Logical error: incorrect node for hash computation
+            generateDigest(&prev_digest_computed, curr->next);
 
             if (digest_equal(prev_digest_computed, curr->hash)) {
                 printf("User %d passed\n", height);
